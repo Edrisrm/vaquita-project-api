@@ -6,7 +6,7 @@ var md_auth = require('../middlewares/authenticated');
 
 const router = Router();
 
-const { register_login_google, totp_generate, totp_validate, logout} = require('../controllers/auth');
+const { register_login_google, totp_validate, logout, getUser } = require('../controllers/auth');
 
 router.post(
     '/',
@@ -18,15 +18,6 @@ router.post(
 );
 
 router.post(
-    "/totp-generate",
-    [
-        check('id', 'Id de usuario requerido').not().isEmpty(),
-        validate_fields,
-    ],
-    totp_generate
-);
-
-router.post(
     "/totp-validate",
     [
         check('id', 'Id de usuario requerido').not().isEmpty(),
@@ -34,6 +25,12 @@ router.post(
         validate_fields,
     ],
     totp_validate
+);
+
+router.get(
+    "/get-user",
+    md_auth.authenticated,
+    getUser
 );
 
 router.get(
