@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { check } = require("express-validator");
 const { validate_fields } = require("../middlewares/validate-fields");
 const router = Router();
-const { save } = require("../controllers/Inventory");
+const { save } = require("../controllers/inventory");
 
 router.post(
   "/inventario-vigente",

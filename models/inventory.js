@@ -19,9 +19,9 @@ const InventorySchema = mongoose.Schema({
   image: {
     type: String,
   },
-  state: {
+  status: {
     type: String,
-    default: "Finca",
+    default: "en_finca",
   },
   division: {
     // potrero
