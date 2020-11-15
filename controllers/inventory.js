@@ -1,5 +1,5 @@
 'use strict'
-const current_inventory = require('../models/inventario_vigente');
+const current_inventory = require('../models/inventory');
 const { response } = require('express');
 
 const save = ( req, res = response) => {
