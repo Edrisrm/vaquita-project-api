@@ -5,7 +5,7 @@ const router = Router();
 const { save, getInventoryByStatus } = require("../controllers/inventory");
 
 router.post(
-  "/inventario-vigente",
+  "/agregar-inventario",
   [
     check("breed", "La raza es requerida").not().isEmpty(),
     check("weight", "El peso es requerido").not().isEmpty(),

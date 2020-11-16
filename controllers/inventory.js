@@ -1,7 +1,8 @@
 const Inventory = require("../models/inventory");
 const { response } = require("express");
+const { ObjectId } = require("mongodb");
 
-const save = (req, res = response) => {
+const save = async (req, res = response) => {
   const { breed, weight, age_in_months, division } = req.body;
   try {
     let inventory = new Inventory();
@@ -12,15 +13,24 @@ const save = (req, res = response) => {
     inventory.division = division;
     inventory.status = "en_finca";
     inventory.image = "Without image";
-    inventory.save();
+    await inventory.save();
 
-    return res.status(200).json({
-      status: "success",
-      msg: "Agregado correctamente",
-      inventory: inventory,
-    });
+    await Inventory.findById(ObjectId(inventory._id))
+      .then((get_inventory) => {
+        console.log(get_inventory);
+        return res.status(200).json({
+          status: "success",
+          msg: "Agregado correctamente",
+          inventory: get_inventory,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).send({
+          msg: "Por favor hable con el administrador",
+        });
+      });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       status: "error",
       msg: "Por favor hable con el administrador",
@@ -45,7 +55,7 @@ const getInventoryByStatus = (req, res = response) => {
 
   const options = {
     sort: { date: -1 },
-    limit: 10,
+    limit: 5,
     page: page,
   };
 
