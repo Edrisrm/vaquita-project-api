@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { check } = require("express-validator");
 const { validate_fields } = require("../middlewares/validate-fields");
 const router = Router();
-const { save } = require("../controllers/inventory");
+const { save, getInventoryByStatus } = require("../controllers/inventory");
 
 router.post(
   "/inventario-vigente",
@@ -15,4 +15,5 @@ router.post(
   ],
   save
 );
+router.get("/inventario-en-finca/:page?", getInventoryByStatus);
 module.exports = router;

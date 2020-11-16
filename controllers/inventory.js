@@ -28,6 +28,51 @@ const save = (req, res = response) => {
   }
 };
 
+const getInventoryByStatus = (req, res = response) => {
+  let page = undefined;
+
+  if (
+    !req.params.page ||
+    req.params.page == 0 ||
+    req.params.page == "0" ||
+    req.params.page == null ||
+    req.params.page == undefined
+  ) {
+    page = 1;
+  } else {
+    page = parseInt(req.params.page);
+  }
+
+  const options = {
+    sort: { date: -1 },
+    limit: 10,
+    page: page,
+  };
+
+  Inventory.paginate({ status: "en_finca" }, options, (err, inventory) => {
+    if (err) {
+      return res.status(500).send({
+        status: "error",
+        message: "Error al hacer la consulta",
+      });
+    }
+
+    if (!inventory) {
+      return res.status(404).send({
+        status: "error",
+        message: "Sin registros",
+      });
+    }
+
+    return res.status(200).send({
+      status: "success",
+      inventory: inventory.docs,
+      totalDocs: inventory.totalDocs,
+      totalPages: inventory.totalPages,
+    });
+  });
+};
 module.exports = {
   save,
+  getInventoryByStatus,
 };
