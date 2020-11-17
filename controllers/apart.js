@@ -51,7 +51,7 @@ const getAparts = (req, res = response) => {
     });
 };
 const deleteOneApart = (req, res = response) => {
-    let apartId = req.body._id;
+    let apartId = req.body.id;
     console.log(apartId)
     Apart.findOneAndDelete({_id: apartId}, (err, apart) =>{
         if (err) {
