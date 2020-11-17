@@ -1,6 +1,7 @@
 const Inventory = require("../models/inventory");
 const { response } = require("express");
 const { ObjectId } = require("mongodb");
+const inventory = require("../models/inventory");
 
 const save = async (req, res = response) => {
   const { breed, weight, age_in_months, division } = req.body;
@@ -82,7 +83,73 @@ const getInventoryByStatus = (req, res = response) => {
     });
   });
 };
+//historicos de ventas
+const getRecords = (req, res = response) => {
+  let page = undefined;
+
+  if (
+    !req.params.page ||
+    req.params.page == 0 ||
+    req.params.page == "0" ||
+    req.params.page == null ||
+    req.params.page == undefined
+  ) {
+    page = 1;
+  } else {
+    page = parseInt(req.params.page);
+  }
+  const options = {
+    sort: { date: -1 },
+    limit: 10,
+    page: page,
+  };
+  Inventory.paginate({statys: "vendidos"}, options, (err, inventory) =>{
+    if (err) {
+      return res.status(500).send({
+        status: "error",
+        message: "Error al hacer la consulta",
+      });
+    }
+    if (!inventory) {
+      return res.status(404).send({
+        status: "error",
+        message: "Sin registros",
+      });
+    }
+    return res.status(200).send({
+      status: "success",
+      inventory: inventory.docs,
+      totalDocs: inventory.totalDocs,
+      totalPages: inventory.totalPages,
+    });
+  });
+};
+const deleteOneInventory = (req, res = response) => {
+  let inventoryId = req.body._id;
+  console.log(inventoryId);
+  Inventory.findOneAndDelete({_id: inventoryId}, (err, inventory)=>{
+    if (err) {
+      return res.status(500).send({
+          status: "error",
+          msg: "Error al solicitar la peticion"
+      });
+    }
+    if (!inventory) {
+      return res.status(404).send({
+        status: "error",
+        msg: "No se ha borrado el inventario",
+      });
+    }
+    return res.status(200).json({
+      status: "success",
+      msg: "Borrado de forma exitosa",
+      inventory: inventory
+    });
+  })
+}
 module.exports = {
   save,
   getInventoryByStatus,
+  getRecords,
+  deleteOneInventory,
 };

@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { check } = require("express-validator");
 const { validate_fields } = require("../middlewares/validate-fields");
 const router = Router();
-const { save, getInventoryByStatus } = require("../controllers/inventory");
+const { save, getInventoryByStatus, deleteOneInventory } = require("../controllers/inventory");
 
 router.post(
   "/agregar-inventario",
@@ -16,4 +16,5 @@ router.post(
   save
 );
 router.get("/inventario-en-finca/:page?", getInventoryByStatus);
+router.delete("/borrar-inventario", deleteOneInventory);
 module.exports = router;
