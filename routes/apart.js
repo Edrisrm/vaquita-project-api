@@ -14,5 +14,5 @@ router.post(
     save
 );
 router.get("/apartos", getAparts);
-router.delete("/borrar-aparto",deleteOneApart);
+router.delete("/borrar-aparto/",deleteOneApart);
 module.exports = router;

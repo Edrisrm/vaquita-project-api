@@ -103,7 +103,7 @@ const getRecords = (req, res = response) => {
     limit: 10,
     page: page,
   };
-  Inventory.paginate({statys: "vendidos"}, options, (err, inventory) =>{
+  Inventory.paginate({status: "vendidos"}, options, (err, inventory) =>{
     if (err) {
       return res.status(500).send({
         status: "error",
@@ -118,14 +118,14 @@ const getRecords = (req, res = response) => {
     }
     return res.status(200).send({
       status: "success",
-      inventory: inventory.docs,
+      records: inventory.docs,
       totalDocs: inventory.totalDocs,
       totalPages: inventory.totalPages,
     });
   });
 };
 const deleteOneInventory = (req, res = response) => {
-  let inventoryId = req.body._id;
+  let inventoryId = req.body.id;
   console.log(inventoryId);
   Inventory.findOneAndDelete({_id: inventoryId}, (err, inventory)=>{
     if (err) {
