@@ -2,7 +2,7 @@ const {Router} = require("express");
 const {check} = require("express-validator");
 const {validate_fields} = require("../middlewares/validate-fields");
 const router = Router();
-const {save, getAparts, deleteApart } = require("../controllers/apart");
+const {save, getAparts, deleteOneApart } = require("../controllers/apart");
 
 router.post(
     "/agregar-apartado",
@@ -14,5 +14,5 @@ router.post(
     save
 );
 router.get("/apartos", getAparts);
-router.delete("/borrar-aparto",deleteApart);
+router.delete("/borrar-aparto",deleteOneApart);
 module.exports = router;

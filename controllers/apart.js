@@ -50,10 +50,10 @@ const getAparts = (req, res = response) => {
         });
     });
 };
-const deleteApart = (req, res = response) => {
-    let apartId = req.body;
-    console.log(apartId._id)
-    Apart.findOneAndDelete({_id: apartId._id}, (err, apart) =>{
+const deleteOneApart = (req, res = response) => {
+    let apartId = req.body._id;
+    console.log(apartId)
+    Apart.findOneAndDelete({_id: apartId}, (err, apart) =>{
         if (err) {
             return res.status(500).send({
                 status: "error",
@@ -68,7 +68,7 @@ const deleteApart = (req, res = response) => {
         }
         return res.status(200).json({
             status: "success",
-            msg: "Borrado de forma exitosamente",
+            msg: "Borrado de forma exitosa",
             apart: apart
         });
     })
@@ -77,5 +77,5 @@ const deleteApart = (req, res = response) => {
 module.exports = {
     save,
     getAparts,
-    deleteApart,
+    deleteOneApart,
 };
