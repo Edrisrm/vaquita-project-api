@@ -53,10 +53,10 @@ const getInventoryByStatus = (req, res = response) => {
   } else {
     page = parseInt(req.params.page);
   }
-
+  console.log(page);
   const options = {
     sort: { date: -1 },
-    limit: 5,
+    limit: 10,
     page: page,
   };
 
@@ -75,11 +75,10 @@ const getInventoryByStatus = (req, res = response) => {
       });
     }
 
-    return res.status(200).send({
+    return res.status(200).json({
       status: "success",
-      inventory: inventory.docs,
-      totalDocs: inventory.totalDocs,
-      totalPages: inventory.totalPages,
+      data: {"data":inventory.docs,"count":inventory.totalDocs, "totalPages":inventory.totalPages},
+  
     });
   });
 };
@@ -100,7 +99,7 @@ const getRecords = (req, res = response) => {
   }
   const options = {
     sort: { date: -1 },
-    limit: 10,
+    limit: 3,
     page: page,
   };
   Inventory.paginate({status: "vendidos"}, options, (err, inventory) =>{
@@ -118,9 +117,10 @@ const getRecords = (req, res = response) => {
     }
     return res.status(200).send({
       status: "success",
-      records: inventory.docs,
-      totalDocs: inventory.totalDocs,
-      totalPages: inventory.totalPages,
+      data: {"data":inventory.docs, "count":inventory.totalDocs,"totalPages":inventory.totalPages},
+      // records: inventory.docs,
+      // totalDocs: inventory.totalDocs,
+      // totalPages: inventory.totalPages,
     });
   });
 };
