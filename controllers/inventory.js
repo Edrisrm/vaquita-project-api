@@ -1,6 +1,7 @@
 const Inventory = require("../models/inventory");
 const { response } = require("express");
 const { ObjectId } = require("mongodb");
+const inventory = require("../models/inventory");
 
 const save = async (req, res = response) => {
   const { breed, weight, age_in_months, division } = req.body;
@@ -53,7 +54,7 @@ const getInventoryByStatus = (req, res = response) => {
   }
   const options = {
     sort: { date: -1 },
-    limit: 5,
+    limit: 10,
     page: page,
   };
 
@@ -72,16 +73,58 @@ const getInventoryByStatus = (req, res = response) => {
       });
     }
 
+    return res.status(200).json({
+      status: "success",
+      data: {"data":inventory.docs,"count":inventory.totalDocs, "totalPages":inventory.totalPages},
+  
+    });
+  });
+};
+//historicos de ventas
+const getRecords = (req, res = response) => {
+  let page = undefined;
+
+  if (
+    !req.params.page ||
+    req.params.page == 0 ||
+    req.params.page == "0" ||
+    req.params.page == null ||
+    req.params.page == undefined
+  ) {
+    page = 1;
+  } else {
+    page = parseInt(req.params.page);
+  }
+  const options = {
+    sort: { date: -1 },
+    limit: 3,
+    page: page,
+  };
+  Inventory.paginate({status: "vendidos"}, options, (err, inventory) =>{
+    if (err) {
+      return res.status(500).send({
+        status: "error",
+        message: "Error al hacer la consulta",
+      });
+    }
+    if (!inventory) {
+      return res.status(404).send({
+        status: "error",
+        message: "Sin registros",
+      });
+    }
     return res.status(200).send({
       status: "success",
-      inventory: inventory.docs,
-      totalDocs: inventory.totalDocs,
-      totalPages: inventory.totalPages,
+      data: {"data":inventory.docs, "count":inventory.totalDocs,"totalPages":inventory.totalPages},
+      // records: inventory.docs,
+      // totalDocs: inventory.totalDocs,
+      // totalPages: inventory.totalPages,
     });
   });
 };
 const deleteOneInventory = (req, res = response) => {
   let inventoryId = req.body.id;
+  
   Inventory.findOneAndDelete({_id: inventoryId}, (err, inventory)=>{
     if (err) {
       return res.status(500).send({
@@ -105,4 +148,6 @@ const deleteOneInventory = (req, res = response) => {
 module.exports = {
   save,
   getInventoryByStatus,
+  getRecords,
+  deleteOneInventory,
 };
