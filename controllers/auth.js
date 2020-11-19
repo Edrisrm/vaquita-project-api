@@ -18,6 +18,7 @@ const register_login_google = (req, res = response) => {
         email_verified,
         given_name,
         family_name,
+        picture,
       } = response.getPayload();
 
       if (email_verified) {
@@ -36,10 +37,7 @@ const register_login_google = (req, res = response) => {
                 msg: "Es un gusto tenerte de nuevo en Vaquita Web",
                 user: {
                   id: get_user._id,
-                  email: get_user.email,
                   given_name: get_user.given_name,
-                  family_name: get_user.family_name,
-                  role: get_user.role,
                   two_factors_activated: get_user.two_factors_activated,
                 },
               });
@@ -49,10 +47,11 @@ const register_login_google = (req, res = response) => {
               user.email = email.toLowerCase();
               user.given_name = given_name;
               user.family_name = family_name;
+              user.family_name = family_name;
               user.role = "ROLE_VIEWER";
+              user.picture = picture;
               user.secret_key = speakeasy.generateSecret().base32;
               user.two_factors_activated = false;
-
               user.save();
 
               res.status(200).json({
@@ -61,10 +60,7 @@ const register_login_google = (req, res = response) => {
                 secret_key: user.secret_key,
                 user: {
                   id: user._id,
-                  email: user.email,
                   given_name: user.given_name,
-                  family_name: user.family_name,
-                  role: user.role,
                   two_factors_activated: user.two_factors_activated,
                 },
               });
@@ -133,6 +129,7 @@ const totp_validate = (req, res = response) => {
             get_user.given_name,
             get_user.family_name,
             get_user.role,
+            get_user.picture,
             (get_user.two_factors_activated = true)
           );
 
@@ -146,6 +143,7 @@ const totp_validate = (req, res = response) => {
               given_name: get_user.given_name,
               family_name: get_user.family_name,
               role: get_user.role,
+              picture: get_user.picture,
               two_factors_activated: get_user.two_factors_activated,
             },
           });
@@ -161,10 +159,10 @@ const totp_validate = (req, res = response) => {
 };
 
 const logout = (req, res = response) => {
-  const { uid } = req.user;
+  const { id } = req.body;
 
   User.findOneAndUpdate(
-    { _id: uid },
+    { _id: id },
     { two_factors_activated: false },
     (err, userUpdated) => {
       if (err || !userUpdated) {
@@ -201,6 +199,7 @@ const getUser = (req, res = response) => {
         given_name: get_user.given_name,
         family_name: get_user.family_name,
         role: get_user.role,
+        picture: get_user.picture,
         two_factors_activated: get_user.two_factors_activated,
       },
     });

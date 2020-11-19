@@ -17,7 +17,6 @@ const save = async (req, res = response) => {
 
     await Inventory.findById(ObjectId(inventory._id))
       .then((get_inventory) => {
-        console.log(get_inventory);
         return res.status(200).json({
           status: "success",
           msg: "Agregado correctamente",
@@ -52,7 +51,6 @@ const getInventoryByStatus = (req, res = response) => {
   } else {
     page = parseInt(req.params.page);
   }
-
   const options = {
     sort: { date: -1 },
     limit: 5,
@@ -82,6 +80,28 @@ const getInventoryByStatus = (req, res = response) => {
     });
   });
 };
+const deleteOneInventory = (req, res = response) => {
+  let inventoryId = req.body.id;
+  Inventory.findOneAndDelete({_id: inventoryId}, (err, inventory)=>{
+    if (err) {
+      return res.status(500).send({
+          status: "error",
+          msg: "Error al solicitar la peticion"
+      });
+    }
+    if (!inventory) {
+      return res.status(404).send({
+        status: "error",
+        msg: "No se ha borrado el inventario",
+      });
+    }
+    return res.status(200).json({
+      status: "success",
+      msg: "Borrado de forma exitosa",
+      inventory: inventory
+    });
+  })
+}
 module.exports = {
   save,
   getInventoryByStatus,
