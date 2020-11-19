@@ -1,9 +1,5 @@
 const Apart = require("../models/apart");
-module.exports = {
-    save,
-    getAparts,
-    deleteOneApart,
-};
+
 const { response } = require("express");
 const { ObjectId } = require("mongodb");
 
