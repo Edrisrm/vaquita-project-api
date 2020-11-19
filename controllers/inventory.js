@@ -18,7 +18,6 @@ const save = async (req, res = response) => {
 
     await Inventory.findById(ObjectId(inventory._id))
       .then((get_inventory) => {
-        console.log(get_inventory);
         return res.status(200).json({
           status: "success",
           msg: "Agregado correctamente",
@@ -53,7 +52,6 @@ const getInventoryByStatus = (req, res = response) => {
   } else {
     page = parseInt(req.params.page);
   }
-  console.log(page);
   const options = {
     sort: { date: -1 },
     limit: 10,
@@ -126,7 +124,7 @@ const getRecords = (req, res = response) => {
 };
 const deleteOneInventory = (req, res = response) => {
   let inventoryId = req.body.id;
-  console.log(inventoryId);
+  
   Inventory.findOneAndDelete({_id: inventoryId}, (err, inventory)=>{
     if (err) {
       return res.status(500).send({

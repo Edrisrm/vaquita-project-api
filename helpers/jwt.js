@@ -13,7 +13,7 @@ exports.createToken = function( _id, email, given_name, family_name, role, two_f
 		role: role,
 		two_factors_activated: two_factors_activated,
 		iat: moment().unix(),
-		exp: moment().add(2, 'days').unix 
+		exp: moment().add(1, 'hours').unix 
 	};
 
 	return jwt.encode( payload, process.env.SECRET_JWT_SEED );
