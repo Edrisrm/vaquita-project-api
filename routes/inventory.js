@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { check } = require("express-validator");
 const { validate_fields } = require("../middlewares/validate-fields");
 const router = Router();
-const { save, getInventoryByStatus, deleteOneInventory, getRecords } = require("../controllers/inventory");
+const { save, getInventoryByStatus, deleteOneInventory, getRecords, edit } = require("../controllers/inventory");
 
 router.post(
   "/agregar-inventario",
@@ -14,6 +14,15 @@ router.post(
     validate_fields,
   ],
   save
+);
+router.put(
+  "/editar-inventario",
+  [
+    check("weight", "El peso es requerido").not().isEmpty(),
+    check("age_in_months", "La edad en meses es requerido").not().isEmpty(),
+    validate_fields,
+  ],
+  edit
 );
 router.get("/inventario-en-finca/:page?", getInventoryByStatus);
 router.get("/historicos/:page?", getRecords);

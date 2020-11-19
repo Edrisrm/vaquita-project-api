@@ -2,6 +2,7 @@ const Inventory = require("../models/inventory");
 const { response } = require("express");
 const { ObjectId } = require("mongodb");
 const inventory = require("../models/inventory");
+const { update } = require("../models/inventory");
 
 const save = async (req, res = response) => {
   const { breed, weight, age_in_months, division } = req.body;
@@ -37,7 +38,45 @@ const save = async (req, res = response) => {
     });
   }
 };
+const edit =  (req, res = response) => {
+  const { _id, weight, age_in_months } = req.body;
+  console.log(_id);
+  try {
+  
+    let update = {
+      weight,
+      age_in_months
+  };
+    
+     Inventory.findOneAndUpdate({_id: _id},update, {new: true}, (error, inventory) =>{
+      if (error) {
+          return res.status(500).send({
+              status: 'error',
+              message: 'Error en la peticion'
+          });
+      }
 
+      if (!inventory) {
+          return res.status(404).send({
+              status: 'error',
+              message: 'No existe este animal'
+          });
+      }
+
+    // Devolver respuesta
+      return res.status(200).send({
+          status: 'success',
+          message: 'Editado correctamente',
+          inventory: inventory
+      });
+    })
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      msg: "Por favor hable con el administrador",
+    });
+  }
+}
 const getInventoryByStatus = (req, res = response) => {
   let page = undefined;
 
@@ -54,7 +93,7 @@ const getInventoryByStatus = (req, res = response) => {
   }
   const options = {
     sort: { date: -1 },
-    limit: 10,
+    limit: 2,
     page: page,
   };
 
@@ -150,4 +189,5 @@ module.exports = {
   getInventoryByStatus,
   getRecords,
   deleteOneInventory,
+  edit,
 };
