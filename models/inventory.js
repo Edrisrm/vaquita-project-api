@@ -23,10 +23,9 @@ const InventorySchema = mongoose.Schema({
     type: String,
     default: "en_finca",
   },
-  division: {
-    // potrero
-    type: String,
-  },
+
+  apart: { type: mongoose.Schema.ObjectId, ref: 'Apart' },
+
   date: { type: Date, default: Date.now },
 });
 

@@ -4,14 +4,14 @@ const { ObjectId } = require("mongodb");
 
 const save = async (req, res = response) => {
   if (req.user.role === "ROLE_ADMINISTRATOR") {
-    const { breed, weight, age_in_months, division } = req.body;
+    const { breed, weight, age_in_months, apartValue } = req.body;
     try {
       let inventory = new Inventory();
 
       inventory.breed = breed;
       inventory.weight = weight;
       inventory.age_in_months = age_in_months;
-      inventory.division = division;
+      inventory.apart = apartValue;
       inventory.status = "en_finca";
       inventory.image = "Without image";
       await inventory.save();
