@@ -187,7 +187,7 @@ const getUser = (req, res = response) => {
     if (err || !get_user) {
       return res.status(404).send({
         status: "error",
-        message: "No existe el usuario",
+        msg: "No existe el usuario",
       });
     }
 

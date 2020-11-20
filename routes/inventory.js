@@ -1,8 +1,20 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
 const { validate_fields } = require("../middlewares/validate-fields");
+const md_auth = require("../middlewares/authenticated");
+const multipart = require("connect-multiparty");
+const md_upload = multipart({ uploadDir: "./uploads/inventory" });
+
 const router = Router();
-const { save, getInventoryByStatus, deleteOneInventory, getRecords, edit } = require("../controllers/inventory");
+
+const {
+  save,
+  getInventoryByStatus,
+  deleteOneInventory,
+  getRecords,
+  update,
+  uploadImage,
+} = require("../controllers/inventory");
 
 router.post(
   "/agregar-inventario",
@@ -13,6 +25,7 @@ router.post(
     check("age_in_months", "La edad en meses es requerido").not().isEmpty(),
     validate_fields,
   ],
+  md_auth.authenticated,
   save
 );
 router.put(
@@ -22,9 +35,19 @@ router.put(
     check("age_in_months", "La edad en meses es requerido").not().isEmpty(),
     validate_fields,
   ],
-  edit
+  md_auth.authenticated,
+  update
 );
-router.get("/inventario-en-finca/:page?", getInventoryByStatus);
-router.get("/historicos/:page?", getRecords);
-router.delete("/borrar-inventario", deleteOneInventory);
+router.post(
+  "/upload-inventory/:id",
+  [md_auth.authenticated, md_upload],
+  uploadImage
+);
+router.get(
+  "/inventario-en-finca/:page?",
+  md_auth.authenticated,
+  getInventoryByStatus
+);
+router.get("/historicos/:page?", md_auth.authenticated, getRecords);
+router.delete("/borrar-inventario", md_auth.authenticated, deleteOneInventory);
 module.exports = router;

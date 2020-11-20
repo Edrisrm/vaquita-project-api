@@ -1,8 +1,6 @@
 const Inventory = require("../models/inventory");
 const { response } = require("express");
 const { ObjectId } = require("mongodb");
-const inventory = require("../models/inventory");
-const { update } = require("../models/inventory");
 
 const save = async (req, res = response) => {
   const { breed, weight, age_in_months, division } = req.body;
@@ -38,45 +36,49 @@ const save = async (req, res = response) => {
     });
   }
 };
-const edit =  (req, res = response) => {
+const update = (req, res = response) => {
   const { _id, weight, age_in_months } = req.body;
   console.log(_id);
   try {
-  
     let update = {
       weight,
-      age_in_months
-  };
-    
-     Inventory.findOneAndUpdate({_id: _id},update, {new: true}, (error, inventory) =>{
-      if (error) {
+      age_in_months,
+    };
+
+    Inventory.findOneAndUpdate(
+      { _id: _id },
+      update,
+      { new: true },
+      (error, inventory) => {
+        if (error) {
           return res.status(500).send({
-              status: 'error',
-              message: 'Error en la peticion'
+            status: "error",
+            msg: "Error en la peticion",
           });
-      }
+        }
 
-      if (!inventory) {
+        if (!inventory) {
           return res.status(404).send({
-              status: 'error',
-              message: 'No existe este animal'
+            status: "error",
+            msg: "No existe este animal",
           });
-      }
+        }
 
-    // Devolver respuesta
-      return res.status(200).send({
-          status: 'success',
-          message: 'Editado correctamente',
-          inventory: inventory
-      });
-    })
+        // Devolver respuesta
+        return res.status(200).send({
+          status: "success",
+          msg: "Editado correctamente",
+          inventory: inventory,
+        });
+      }
+    );
   } catch (error) {
     return res.status(500).json({
       status: "error",
       msg: "Por favor hable con el administrador",
     });
   }
-}
+};
 const getInventoryByStatus = (req, res = response) => {
   let page = undefined;
 
@@ -101,21 +103,24 @@ const getInventoryByStatus = (req, res = response) => {
     if (err) {
       return res.status(500).send({
         status: "error",
-        message: "Error al hacer la consulta",
+        msg: "Error al hacer la consulta",
       });
     }
 
     if (!inventory) {
       return res.status(404).send({
         status: "error",
-        message: "Sin registros",
+        msg: "Sin registros",
       });
     }
 
     return res.status(200).json({
       status: "success",
-      data: {"data":inventory.docs,"count":inventory.totalDocs, "totalPages":inventory.totalPages},
-  
+      data: {
+        data: inventory.docs,
+        count: inventory.totalDocs,
+        totalPages: inventory.totalPages,
+      },
     });
   });
 };
@@ -139,36 +144,38 @@ const getRecords = (req, res = response) => {
     limit: 3,
     page: page,
   };
-  Inventory.paginate({status: "vendidos"}, options, (err, inventory) =>{
+  Inventory.paginate({ status: "vendidos" }, options, (err, inventory) => {
     if (err) {
       return res.status(500).send({
         status: "error",
-        message: "Error al hacer la consulta",
+        msg: "Error al hacer la consulta",
       });
     }
     if (!inventory) {
       return res.status(404).send({
         status: "error",
-        message: "Sin registros",
+        msg: "Sin registros",
       });
     }
     return res.status(200).send({
       status: "success",
-      data: {"data":inventory.docs, "count":inventory.totalDocs,"totalPages":inventory.totalPages},
-      // records: inventory.docs,
-      // totalDocs: inventory.totalDocs,
-      // totalPages: inventory.totalPages,
+      data: {
+        data: inventory.docs,
+        count: inventory.totalDocs,
+        totalPages: inventory.totalPages,
+      },
     });
   });
 };
+
 const deleteOneInventory = (req, res = response) => {
   let inventoryId = req.body.id;
-  
-  Inventory.findOneAndDelete({_id: inventoryId}, (err, inventory)=>{
+
+  Inventory.findOneAndDelete({ _id: inventoryId }, (err, inventory) => {
     if (err) {
       return res.status(500).send({
-          status: "error",
-          msg: "Error al solicitar la peticion"
+        status: "error",
+        msg: "Error al solicitar la peticion",
       });
     }
     if (!inventory) {
@@ -180,14 +187,74 @@ const deleteOneInventory = (req, res = response) => {
     return res.status(200).json({
       status: "success",
       msg: "Borrado de forma exitosa",
-      inventory: inventory
+      inventory: inventory,
     });
-  })
+  });
+};
+
+const uploadImage = (req, res = response) => {
+  if (!req.files) {
+    return res.status(404).send({
+      status: "error",
+      msg: "Imagen del registro no subida...",
+    });
+  }
+
+  const file_path = req.files.file0.path;
+
+  // ** Adventencia ** En, Windows
+  //var file_split = file_path.split('\\');
+
+  const file_split = file_path.split("/");
+  const file_name = file_split[2];
+  const ext_split = file_name.split(".");
+  const file_ext = ext_split[1];
+
+  if (
+    file_ext != "png" &&
+    file_ext != "jpg" &&
+    file_ext != "jpeg" &&
+    file_ext != "gif"
+  ) {
+    fs.unlink(file_path, (err) => {
+      return res.status(200).send({
+        status: "error",
+        msg: "La extension del archivo no es valida.",
+      });
+    });
+  } else {
+    const inventoryId = req.params.id;
+
+    Inventory.findOneAndUpdate(
+      { _id: inventoryId },
+      { image: file_name },
+      { new: true },
+      (err, inventoryUpdated) => {
+        if (err || !inventoryUpdated) {
+          return res.status(500).send({
+            status: "error",
+            msg: "Error al guardar el registro",
+          });
+        }
+        return res.status(200).send({
+          status: "success",
+          inventory: inventoryUpdated,
+        });
+      }
+    );
+  }
+};
+
+const getInventoryFiles = (req, res = response) => {
+
 }
+
 module.exports = {
   save,
   getInventoryByStatus,
   getRecords,
   deleteOneInventory,
-  edit,
+  update,
+  uploadImage,
+  getInventoryFiles
 };
