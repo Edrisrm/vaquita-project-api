@@ -211,7 +211,10 @@ const deleteOneInventory = (req, res = response) => {
   }
 };
 
-const uploadImage = (req, res = response) => {
+const uploadImage = (req, res) => {
+
+  console.log(req.params);
+  console.log(req.body);
   if (req.user.role === "ROLE_ADMINISTRATOR") {
     if (!req.files) {
       return res.status(404).send({
@@ -258,6 +261,7 @@ const uploadImage = (req, res = response) => {
           }
           return res.status(200).send({
             status: "success",
+            msg: 'Imagen actualizada en el registro',
             inventory: inventoryUpdated,
           });
         }
