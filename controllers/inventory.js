@@ -213,43 +213,59 @@ const deleteOneInventory = (req, res = response) => {
 };
 
 const updateStatus = (req, res = response) => {
-  const { data } = req.body;
-  data.forEach(function (element) {
-    Inventory.findOneAndUpdate({ _id: element._id },  { status: "vendido" }, (err) => {
-    
-
-      if (err) {
-        return res.status(500).send({
-          status: "error",
-          msg: "Error en la operacion",
-        });
-      }
+  if (req.user.role === "ROLE_ADMINISTRATOR") {
+    const { data } = req.body;
+    data.forEach(function (element) {
+      Inventory.findOneAndUpdate(
+        { _id: element._id },
+        { status: "vendido" },
+        (err) => {
+          if (err) {
+            return res.status(500).send({
+              status: "error",
+              msg: "Error en la operacion",
+            });
+          }
+        }
+      );
     });
-  });
 
-  return res.status(200).send({
-    status: "success",
-    msg: "Todos los animales como vendidos",
-  });
+    return res.status(200).send({
+      status: "success",
+      msg: "Todos los animales como vendidos",
+    });
+  } else {
+    return res.status(400).send({
+      status: "error",
+      msg: "No tienes permisos en la plataforma",
+    });
+  }
 };
 
 const deleteManyInventory = (req, res = response) => {
-  const { data } = req.body;
+  if (req.user.role === "ROLE_ADMINISTRATOR") {
+    const { data } = req.body;
 
-  data.forEach(function (element) {
-    Inventory.findOneAndDelete({ _id: element._id }, (err) => {
-      if (err) {
-        return res.status(500).send({
-          status: "error",
-          msg: "Error en la operacion",
-        });
-      }
+    data.forEach(function (element) {
+      Inventory.findOneAndDelete({ _id: element._id }, (err) => {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            msg: "Error en la operacion",
+          });
+        }
+      });
     });
-  });
-  return res.status(200).send({
-    status: "success",
-    msg: "Registros eliminados",
-  });
+    return res.status(200).send({
+      status: "success",
+      msg: "Registros eliminados",
+    });
+  } else {
+    return res.status(400).send({
+      status: "error",
+      msg: "No tienes permisos en la plataforma",
+    });
+  }
 };
 
 const uploadImage = (req, res) => {
