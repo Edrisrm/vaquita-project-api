@@ -69,8 +69,28 @@ const deleteOneApart = (req, res = response) => {
   }
 };
 
+const deleteManyApart = (req, res = response) => {
+  const { data } = req.body;
+
+  data.forEach(function (element) {
+    Apart.findOneAndDelete({ _id: element._id }, (err) => {
+      if (err) {
+        return res.status(500).send({
+          status: "error",
+          msg: "Error en la operacion",
+        });
+      }
+    });
+  });
+  return res.status(200).send({
+    status: "success",
+    msg: "Apartos eliminados",
+  });
+};
+
 module.exports = {
   save,
   getAparts,
   deleteOneApart,
+  deleteManyApart
 };
