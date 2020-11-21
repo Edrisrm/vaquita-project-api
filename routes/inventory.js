@@ -14,6 +14,7 @@ const {
   getRecords,
   update,
   uploadImage,
+  getInventoryFiles,
 } = require("../controllers/inventory");
 
 router.post(
@@ -43,6 +44,8 @@ router.post(
   [md_auth.authenticated, md_upload],
   uploadImage
 );
+
+router.get("/inventory-file/:fileName", getInventoryFiles);
 router.get(
   "/inventario-en-finca/:page?",
   md_auth.authenticated,

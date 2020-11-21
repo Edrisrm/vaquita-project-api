@@ -1,6 +1,8 @@
 const Inventory = require("../models/inventory");
 const { response } = require("express");
 const { ObjectId } = require("mongodb");
+var path = require('path');
+var fs = require('fs');
 
 const save = async (req, res = response) => {
   if (req.user.role === "ROLE_ADMINISTRATOR") {
@@ -13,7 +15,7 @@ const save = async (req, res = response) => {
       inventory.age_in_months = age_in_months;
       inventory.apart = apartValue;
       inventory.status = "en_finca";
-      inventory.image = "Without image";
+      inventory.image = null;
       await inventory.save();
 
       await Inventory.findById(ObjectId(inventory._id))
@@ -136,7 +138,6 @@ const getInventoryByStatus = (req, res = response) => {
     });
   });
 };
-//historicos de ventas
 const getRecords = (req, res = response) => {
   let page = undefined;
 
@@ -211,7 +212,8 @@ const deleteOneInventory = (req, res = response) => {
   }
 };
 
-const uploadImage = (req, res = response) => {
+const uploadImage = (req, res) => {
+
   if (req.user.role === "ROLE_ADMINISTRATOR") {
     if (!req.files) {
       return res.status(404).send({
@@ -258,6 +260,7 @@ const uploadImage = (req, res = response) => {
           }
           return res.status(200).send({
             status: "success",
+            msg: 'Imagen actualizada en el registro',
             inventory: inventoryUpdated,
           });
         }
@@ -271,7 +274,20 @@ const uploadImage = (req, res = response) => {
   }
 };
 
-const getInventoryFiles = (req, res = response) => {};
+const getInventoryFiles = (req, res = response) => {
+  var fileName = req.params.fileName;
+  var pathFile = './uploads/inventory/' + fileName;
+
+  fs.exists(pathFile, (exists) => {
+    if (exists) {
+      return res.sendFile(path.resolve(pathFile));
+    } else {
+      return res.status(404).send({
+        msg: 'La imagen no existe'
+      });
+    }
+  });
+};
 
 module.exports = {
   save,
