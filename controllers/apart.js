@@ -10,6 +10,12 @@ const save = async (req, res = response) => {
       apart.square_meter = square_meter;
       apart.apart_number = apart_number;
       apart.save();
+
+      return res.status(200).json({
+        status: "success",
+        msg: "Agregado correctamente",
+        apart: apart,
+      });
     } catch (error) {
       return res.status(500).json({
         status: "error",
@@ -92,5 +98,5 @@ module.exports = {
   save,
   getAparts,
   deleteOneApart,
-  deleteManyApart
+  deleteManyApart,
 };

@@ -214,9 +214,10 @@ const deleteOneInventory = (req, res = response) => {
 
 const updateStatus = (req, res = response) => {
   const { data } = req.body;
-
   data.forEach(function (element) {
-    Inventory.findOneAndDelete({ _id: element._id }, (err) => {
+    Inventory.findOneAndUpdate({ _id: element._id },  { status: "vendido" }, (err) => {
+    
+
       if (err) {
         return res.status(500).send({
           status: "error",
