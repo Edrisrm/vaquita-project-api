@@ -1,6 +1,8 @@
 const Inventory = require("../models/inventory");
 const { response } = require("express");
 const { ObjectId } = require("mongodb");
+var path = require('path');
+var fs = require('fs');
 
 const save = async (req, res = response) => {
   if (req.user.role === "ROLE_ADMINISTRATOR") {
@@ -212,8 +214,6 @@ const deleteOneInventory = (req, res = response) => {
 
 const uploadImage = (req, res) => {
 
-  console.log(req.params);
-  console.log(req.body);
   if (req.user.role === "ROLE_ADMINISTRATOR") {
     if (!req.files) {
       return res.status(404).send({
@@ -274,7 +274,20 @@ const uploadImage = (req, res) => {
   }
 };
 
-const getInventoryFiles = (req, res = response) => {};
+const getInventoryFiles = (req, res = response) => {
+  var fileName = req.params.fileName;
+  var pathFile = './uploads/inventory/' + fileName;
+
+  fs.exists(pathFile, (exists) => {
+    if (exists) {
+      return res.sendFile(path.resolve(pathFile));
+    } else {
+      return res.status(404).send({
+        msg: 'La imagen no existe'
+      });
+    }
+  });
+};
 
 module.exports = {
   save,
