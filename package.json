@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon express_server.js",
     "start": "node express_server.js",
-    "test": "./node_modules/.bin/mocha --timeout 20000"
+    "test": "./node_modules/.bin/mocha --timeout 20000 --exit"
   },
   "keywords": [],
   "author": "Adrian, Edris, Elvin",
