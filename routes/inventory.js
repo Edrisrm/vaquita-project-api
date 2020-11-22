@@ -15,6 +15,8 @@ const {
   update,
   uploadImage,
   getInventoryFiles,
+  updateStatus,
+  deleteManyInventory,
 } = require("../controllers/inventory");
 
 router.post(
@@ -51,6 +53,27 @@ router.get(
   md_auth.authenticated,
   getInventoryByStatus
 );
+
+router.put(
+  "/actualizar-estado",
+  [
+    check("data", "Se necesitan dados para actualizar en masa").not().isEmpty(),
+    validate_fields,
+  ],
+  md_auth.authenticated,
+  updateStatus
+);
+
+router.delete(
+  "/eliminar-registros",
+  [
+    check("data", "Se necesitan dados para eliminar en masa").not().isEmpty(),
+    validate_fields,
+  ],
+  md_auth.authenticated,
+  deleteManyInventory
+);
+
 router.get("/historicos/:page?", md_auth.authenticated, getRecords);
 router.delete("/borrar-inventario", md_auth.authenticated, deleteOneInventory);
 module.exports = router;

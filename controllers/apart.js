@@ -10,6 +10,12 @@ const save = async (req, res = response) => {
       apart.square_meter = square_meter;
       apart.apart_number = apart_number;
       apart.save();
+
+      return res.status(200).json({
+        status: "success",
+        msg: "Agregado correctamente",
+        apart: apart,
+      });
     } catch (error) {
       return res.status(500).json({
         status: "error",
@@ -69,8 +75,28 @@ const deleteOneApart = (req, res = response) => {
   }
 };
 
+const deleteManyApart = (req, res = response) => {
+  const { data } = req.body;
+
+  data.forEach(function (element) {
+    Apart.findOneAndDelete({ _id: element._id }, (err) => {
+      if (err) {
+        return res.status(500).send({
+          status: "error",
+          msg: "Error en la operacion",
+        });
+      }
+    });
+  });
+  return res.status(200).send({
+    status: "success",
+    msg: "Apartos eliminados",
+  });
+};
+
 module.exports = {
   save,
   getAparts,
   deleteOneApart,
+  deleteManyApart,
 };

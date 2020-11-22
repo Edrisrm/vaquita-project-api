@@ -1,8 +1,8 @@
 const Inventory = require("../models/inventory");
 const { response } = require("express");
 const { ObjectId } = require("mongodb");
-var path = require('path');
-var fs = require('fs');
+var path = require("path");
+var fs = require("fs");
 
 const save = async (req, res = response) => {
   if (req.user.role === "ROLE_ADMINISTRATOR") {
@@ -157,7 +157,7 @@ const getRecords = (req, res = response) => {
     limit: 3,
     page: page,
   };
-  Inventory.paginate({ status: "vendidos" }, options, (err, inventory) => {
+  Inventory.paginate({ status: "vendido" }, options, (err, inventory) => {
     if (err) {
       return res.status(500).send({
         status: "error",
@@ -212,8 +212,63 @@ const deleteOneInventory = (req, res = response) => {
   }
 };
 
-const uploadImage = (req, res) => {
+const updateStatus = (req, res = response) => {
+  if (req.user.role === "ROLE_ADMINISTRATOR") {
+    const { data } = req.body;
+    data.forEach(function (element) {
+      Inventory.findOneAndUpdate(
+        { _id: element._id },
+        { status: "vendido" },
+        (err) => {
+          if (err) {
+            return res.status(500).send({
+              status: "error",
+              msg: "Error en la operacion",
+            });
+          }
+        }
+      );
+    });
 
+    return res.status(200).send({
+      status: "success",
+      msg: "Todos los animales como vendidos",
+    });
+  } else {
+    return res.status(400).send({
+      status: "error",
+      msg: "No tienes permisos en la plataforma",
+    });
+  }
+};
+
+const deleteManyInventory = (req, res = response) => {
+  if (req.user.role === "ROLE_ADMINISTRATOR") {
+    const { data } = req.body;
+
+    data.forEach(function (element) {
+      Inventory.findOneAndDelete({ _id: element._id }, (err) => {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            msg: "Error en la operacion",
+          });
+        }
+      });
+    });
+    return res.status(200).send({
+      status: "success",
+      msg: "Registros eliminados",
+    });
+  } else {
+    return res.status(400).send({
+      status: "error",
+      msg: "No tienes permisos en la plataforma",
+    });
+  }
+};
+
+const uploadImage = (req, res) => {
   if (req.user.role === "ROLE_ADMINISTRATOR") {
     if (!req.files) {
       return res.status(404).send({
@@ -260,7 +315,7 @@ const uploadImage = (req, res) => {
           }
           return res.status(200).send({
             status: "success",
-            msg: 'Imagen actualizada en el registro',
+            msg: "Imagen actualizada en el registro",
             inventory: inventoryUpdated,
           });
         }
@@ -276,14 +331,14 @@ const uploadImage = (req, res) => {
 
 const getInventoryFiles = (req, res = response) => {
   var fileName = req.params.fileName;
-  var pathFile = './uploads/inventory/' + fileName;
+  var pathFile = "./uploads/inventory/" + fileName;
 
   fs.exists(pathFile, (exists) => {
     if (exists) {
       return res.sendFile(path.resolve(pathFile));
     } else {
       return res.status(404).send({
-        msg: 'La imagen no existe'
+        msg: "La imagen no existe",
       });
     }
   });
@@ -297,4 +352,6 @@ module.exports = {
   update,
   uploadImage,
   getInventoryFiles,
+  updateStatus,
+  deleteManyInventory,
 };
