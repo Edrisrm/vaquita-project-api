@@ -1,9 +1,7 @@
 on:
   push:
     branches:
-      - master
-  pull_request:
-      types: [opened, synchronize, reopened]
+      - dev
 name: Main Workflow
 jobs:
   sonarcloud:
