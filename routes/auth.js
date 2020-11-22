@@ -34,6 +34,10 @@ router.post(
 
 router.get("/get-user", md_auth.authenticated, getUser);
 
-router.get("/logout", md_auth.authenticated, logout);
+router.post(
+  "/logout",
+  [check("id", "Id de usuario requerido").not().isEmpty(), validate_fields],
+  logout
+);
 
 module.exports = router;

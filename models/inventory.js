@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 var mongoosePaginate = require("mongoose-paginate-v2");
-
+const moment = require("moment");
+moment.locale("es");
 const InventorySchema = mongoose.Schema({
   breed: {
     type: String,
@@ -23,11 +24,13 @@ const InventorySchema = mongoose.Schema({
     type: String,
     default: "en_finca",
   },
-  division: {
-    // potrero
+
+  apart: { type: mongoose.Schema.ObjectId, ref: "Apart" },
+
+  date: {
     type: String,
+    default: () => moment().format("DD, MM  YYYY, HH:MM:SS"),
   },
-  date: { type: Date, default: Date.now },
 });
 
 InventorySchema.plugin(AutoIncrement, {
