@@ -48,7 +48,6 @@ const save = async (req, res = response) => {
 const update = (req, res = response) => {
   if (req.user.role === "ROLE_ADMINISTRATOR") {
     const { _id, weight, age_in_months } = req.body;
-    console.log(_id);
     try {
       let update = {
         weight,
