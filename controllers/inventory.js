@@ -109,7 +109,7 @@ const getInventoryByStatus = (req, res = response) => {
   }
   const options = {
     sort: { date: -1 },
-    limit: 2,
+    limit: 10,
     page: page,
   };
 
@@ -154,7 +154,7 @@ const getRecords = (req, res = response) => {
   }
   const options = {
     sort: { date: -1 },
-    limit: 3,
+    limit: 10,
     page: page,
   };
   Inventory.paginate({ status: "vendido" }, options, (err, inventory) => {
