@@ -108,7 +108,7 @@ const getInventoryByStatus = (req, res = response) => {
   }
   const options = {
     sort: { date: -1 },
-    limit: 10,
+    limit: 9,
     page: page,
   };
 
